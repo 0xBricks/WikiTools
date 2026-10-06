@@ -64,7 +64,7 @@ Active **Apparence des cartes**, clique sur **Personnaliser une carte**, puis di
 - **Halo** : active ou désactive la lueur de cette carte et choisis sa couleur. **Halo automatique** rétablit la couleur calculée automatiquement.
 - **Effets communs à toutes les cartes** : choisis la brillance du site uniquement, un reflet holographique arc-en-ciel, un reflet doré ou des scintillements. Ajuste leur intensité et active ou désactive l’inclinaison légère au survol. Ces réglages sont communs, contrairement au cadrage et au halo propres à chaque carte.
 
-Les réglages sont enregistrés automatiquement. Sélectionne une autre carte pour la personnaliser à son tour. Désactiver **Apparence des cartes** masque les personnalisations sans les supprimer.
+Les réglages sont enregistrés automatiquement. Désactiver **Apparence des cartes** masque les personnalisations sans les supprimer.
 
 ### Ouvrir les boosters au clavier
 
