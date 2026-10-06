@@ -4,7 +4,7 @@
     const details = document.createElement("details");
     details.className = "wm-tools";
     const summary = document.createElement("summary");
-    summary.textContent = "Outils Wiki";
+    summary.textContent = "WikiTools";
     const body = document.createElement("div");
     body.className = "wm-tools-body";
     const switches = [];
