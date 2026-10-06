@@ -77,7 +77,7 @@ Active **Raccourcis clavier**, puis rends-toi sur la page d’ouverture des boos
 | Entrée | Activer le bouton d’ouverture ou de continuation disponible |
 | Flèche gauche / droite | Utiliser la navigation disponible entre les cartes |
 
-Les raccourcis peuvent être désactivés dans le menu. Il n’y a pas de raccourci clavier dédié aux cadenas.
+Les raccourcis peuvent être désactivés dans le menu.
 
 ## Sauvegarde et limites
 
