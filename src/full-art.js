@@ -263,18 +263,6 @@
               Math.max(name === "zoom" ? 100 : 0, value[name]),
             );
       }
-    // Migrate the first prototype's global photo once; all rendering now uses per-card settings.
-    if (
-      typeof raw.customImage === "string" &&
-      raw.customImage.startsWith("data:image/") &&
-      !Object.hasOwn(next.cards, "guillaume pley")
-    ) {
-      next.cards["guillaume pley"] = {
-        full: false,
-        customImage: raw.customImage,
-        haloEnabled: true,
-      };
-    }
     return next;
   }
   const supported = () =>
