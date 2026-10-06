@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/github/license/0xBricks/wikitools?style=flat-square" alt="Licence">
   <img src="https://img.shields.io/github/v/release/0xBricks/wikitools?style=flat-square" alt="Version">
   <img src="https://img.shields.io/github/stars/0xBricks/wikitools?style=flat-square" alt="Stars">
-  <img src="https://img.shields.io/github/issues/0xBricks/wikitools?style=flat-square" alt="Issues">
+  <img src="https://img.shields.io/github/issues/0xBricks/wikitools" alt="Issues">
 </p>
 
 <p align="center">
