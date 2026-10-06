@@ -1,0 +1,67 @@
+{
+  "manifest_version": 2,
+  "name": "WikiTools",
+  "version": "0.14.2",
+  "description": "Personnalisez vos cartes WikiMasters en Full Art et gérez votre collection avec des cadenas, des multi-étiquettes et des raccourcis clavier.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wikitools@wikimasters-local.invalid",
+      "strict_min_version": "115.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      },
+      "update_url": "https://github.com/0xBricks/WikiTools/releases/latest/download/updates.json"
+    }
+  },
+  "permissions": [
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "https://www.wiki-masters.com/*",
+    "https://wiki-masters.com/*",
+    "https://cyrxjeppjqsxxjayfrur.supabase.co/*",
+    "unlimitedStorage"
+  ],
+  "background": {
+    "scripts": [
+      "core.js",
+      "features.js",
+      "lock-policy.js",
+      "locks-background.js",
+      "label-watch-background.js",
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.wiki-masters.com/*",
+        "https://wiki-masters.com/*"
+      ],
+      "js": [
+        "core.js",
+        "features.js",
+        "page-events.js",
+        "menu.js",
+        "navigation.js",
+        "pulls-keyboard.js",
+        "label-batch.js",
+        "labels.js",
+        "locks.js",
+        "content.js",
+        "image-tools.js",
+        "full-art.js"
+      ],
+      "css": [
+        "content.css",
+        "full-art.css"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}

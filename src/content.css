@@ -1,0 +1,290 @@
+.wm-toolbar {
+  display: block;
+  position: fixed;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  right: 12px;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  box-shadow: 0 4px 24px #0006;
+  padding: 0;
+  border: 1px solid var(--color-border, #ffffff26);
+  border-radius: 12px;
+  background: var(--color-surface, #191d27);
+  color: var(--color-foreground, #e9eaf0);
+  font:
+    12px/1.5 system-ui,
+    sans-serif;
+}
+.wm-toolbar button {
+  background: #f4d58f;
+  color: #191d27;
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font:
+    600 12px system-ui,
+    sans-serif;
+  cursor: pointer;
+}
+.wm-toolbar button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.wm-toolbar button:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+.wm-native-lock-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.wm-native-lock-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.wm-deselect-source {
+  display: none !important;
+}
+.wm-page-deselect-hidden {
+  display: none !important;
+}
+.wm-deselect-control {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: 16px;
+  z-index: 2147483646;
+  max-width: calc(100vw - 32px);
+}
+.wm-lock-notice {
+  width: 100%;
+  font-size: 11px;
+}
+.wm-lock-notice:empty {
+  display: none;
+}
+.wm-lock-marker[hidden] {
+  display: none;
+}
+
+.wm-locked-action {
+  opacity: 0.4 !important;
+  filter: grayscale(1);
+  cursor: not-allowed !important;
+}
+
+/* Compact collection tools, using the site's surface and accent colours. */
+.wm-tools summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 11px 14px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  user-select: none;
+}
+.wm-tools summary::-webkit-details-marker {
+  display: none;
+}
+.wm-tools summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-135deg);
+  margin-left: auto;
+}
+.wm-tools[open] > summary::after {
+  transform: rotate(45deg);
+}
+.wm-tools[open] > summary {
+  border-bottom: 1px solid var(--color-border, #ffffff26);
+}
+.wm-tools-body {
+  width: min(310px, calc(100vw - 26px));
+  box-sizing: border-box;
+  padding: 4px 14px 12px;
+}
+.wm-feature {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  cursor: pointer;
+}
+.wm-feature strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.wm-feature small {
+  display: block;
+  margin-top: 3px;
+  opacity: 0.6;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.wm-feature input {
+  appearance: none;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 18px;
+  margin: 0;
+  padding: 2px;
+  border: 1px solid var(--color-border, #ffffff26);
+  border-radius: 20px;
+  background: #ffffff12;
+  cursor: pointer;
+}
+.wm-feature input::before {
+  content: "";
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #9ca3af;
+  transition: transform 0.15s;
+}
+.wm-feature input:checked {
+  border-color: var(--color-accent, #c9a45e);
+  background: var(--color-accent, #c9a45e);
+}
+.wm-feature input:checked::before {
+  transform: translateX(12px);
+  background: #10151c;
+}
+.wm-feature input:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+.wm-feature input:focus-visible,
+.wm-tools summary:focus-visible {
+  outline: 2px solid var(--color-accent, #c9a45e);
+  outline-offset: 3px;
+}
+.wm-lock-marker {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  bottom: auto;
+  top: 32px;
+  left: 8px;
+  right: auto;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 6px;
+  background: rgb(24 32 43 / 48%);
+  color: rgb(224 230 238 / 65%);
+}
+div.absolute.top-2.left-2 > .wm-lock-marker {
+  top: calc(100% + 4px);
+  left: 0;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: inherit;
+}
+.wm-lock-marker::before {
+  content: "";
+  width: 1em;
+  height: 1em;
+  max-height: 80%;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='10' width='16' height='11' rx='2'/%3E%3Cpath d='M8 10V6a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wm-feature input::before {
+    transition: none;
+  }
+}
+.wm-label-option::after {
+  content: "";
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border, #ffffff40);
+  border-radius: 4px;
+}
+.wm-label-option[aria-checked="true"]::after {
+  content: "✓";
+  display: grid;
+  place-items: center;
+  background: var(--color-accent, #c9a45e);
+  border-color: var(--color-accent, #c9a45e);
+  color: #111827;
+  font: 700 12px/1 system-ui;
+}
+.wm-label-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border, #ffffff26);
+  font-size: 12px;
+}
+.wm-label-footer > [role="status"]:empty {
+  display: none;
+}
+.wm-label-apply,
+.wm-label-progress button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--color-accent, #c9a45e);
+  color: #111827;
+  font: 600 12px system-ui;
+  cursor: pointer;
+}
+.wm-label-apply:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.wm-label-option:focus-visible,
+.wm-label-apply:focus-visible {
+  outline: 2px solid var(--color-accent, #c9a45e);
+  outline-offset: 2px;
+}
+.wm-label-progress {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 45%);
+  font: 13px/1.5 system-ui;
+}
+.wm-label-progress > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px;
+  max-width: min(420px, calc(100vw - 32px));
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1px solid var(--color-border, #ffffff26);
+  background: var(--color-surface, #191d27);
+  color: var(--color-foreground, #e9eaf0);
+}
+
+.wm-label-footer[hidden] {
+  display: none !important;
+}

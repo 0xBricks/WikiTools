@@ -1,0 +1,407 @@
+.wmfa-card {
+  container-type: inline-size;
+  --wmfa-x: 50%;
+  --wmfa-y: 30%;
+  --wmfa-angle: 0deg;
+}
+.wmfa-card.wmfa-full {
+  background: #16141a;
+}
+.wmfa-full > .wmfa-portrait {
+  inset: 0 !important;
+  height: 100% !important;
+  z-index: 20 !important;
+}
+.wmfa-full .wmfa-image {
+  object-fit: cover !important;
+  object-position: var(--wmfa-focus-x, 50%) var(--wmfa-focus, 30%) !important;
+}
+.wmfa-full > .wmfa-content {
+  position: absolute !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+  z-index: 40 !important;
+  padding: 8px !important;
+  background: linear-gradient(transparent, #0c1016dd 38%, #0c1016f5);
+}
+.wmfa-full .wmfa-content h3 {
+  color: #fff4d6 !important;
+  text-shadow: 0 1px 5px #000 !important;
+  letter-spacing: 0.02em;
+}
+.wmfa-full .wmfa-content > p {
+  color: #e3e5ee !important;
+  -webkit-line-clamp: 2 !important;
+}
+.wmfa-full .wmfa-content .font-bold {
+  color: #fff4d6 !important;
+}
+.wmfa-full .wmfa-content svg {
+  color: #f4d080 !important;
+}
+.wmfa-full .wmfa-content .border-t {
+  border-color: #f4d08055 !important;
+}
+.wmfa-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--wmfa-intensity, 0.35);
+}
+.wmfa-card[data-wmfa-effect="native"] > .wmfa-overlay {
+  display: none;
+}
+.wmfa-card[data-wmfa-effect="prism"] > .wmfa-overlay {
+  background: repeating-linear-gradient(
+    120deg,
+    #fa919d55 0%,
+    #fbeeb477 15%,
+    #94fff077 30%,
+    #91a5ff77 45%,
+    #e99aff55 60%
+  );
+  background-size: 250% 250%;
+  background-position: var(--wmfa-x) var(--wmfa-y);
+  mix-blend-mode: color-dodge;
+}
+.wmfa-card[data-wmfa-effect="gold"] > .wmfa-overlay {
+  background: radial-gradient(
+    ellipse at var(--wmfa-x) var(--wmfa-y),
+    #fff9dedd,
+    #ffd77a44 25%,
+    transparent 65%
+  );
+  mix-blend-mode: screen;
+}
+.wmfa-card[data-wmfa-effect="stars"] > .wmfa-overlay {
+  background-image:
+    radial-gradient(circle, #fffbe8 0 1px, transparent 2px),
+    radial-gradient(circle, #ffe1a9 0 0.6px, transparent 1.8px);
+  background-size:
+    31px 43px,
+    47px 29px;
+  background-position:
+    var(--wmfa-x) var(--wmfa-y),
+    0 0;
+  mix-blend-mode: screen;
+  animation: wmfa-twinkle 4s ease-in-out infinite alternate;
+}
+.wmfa-card.wmfa-tilt {
+  rotate: var(--wmfa-angle);
+  transition: rotate 0.15s ease-out;
+}
+@keyframes wmfa-twinkle {
+  from {
+    opacity: calc(var(--wmfa-intensity) * 0.3);
+  }
+  to {
+    opacity: var(--wmfa-intensity);
+  }
+}
+.wmfa-panel {
+  position: relative;
+  margin-top: 8px;
+  width: 100%;
+  border-top: 1px solid var(--color-border, #ffffff26);
+  color: inherit;
+  font:
+    12px/1.5 system-ui,
+    sans-serif;
+}
+.wmfa-panel summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: #f8d794;
+  font-weight: 700;
+}
+.wmfa-settings {
+  max-height: 65vh;
+  overflow: auto;
+  padding: 0 14px 14px;
+}
+.wmfa-settings p,
+.wmfa-settings small {
+  color: #b8c1ce;
+}
+.wmfa-settings label {
+  display: block;
+  margin: 12px 0;
+}
+.wmfa-settings input[type="range"],
+.wmfa-settings select {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  accent-color: #e3bd72;
+}
+.wmfa-settings select {
+  background: #222b38;
+  border: 1px solid #738096;
+  color: white;
+  padding: 6px;
+  border-radius: 5px;
+}
+.wmfa-settings input[type="file"] {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  font-size: 11px;
+  color: #c9d1dc;
+}
+.wmfa-settings button {
+  background: #ecd096;
+  color: #131820;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 6px;
+  margin-top: 4px;
+}
+.wmfa-settings button.wmfa-secondary {
+  background: #2c3646;
+  color: #e7ecf3;
+}
+.wmfa-settings small {
+  display: block;
+  margin-top: 10px;
+}
+.wmfa-photo-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wmfa-panel :focus-visible {
+  outline: 2px solid #fff4cf;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wmfa-card.wmfa-tilt {
+    rotate: 0deg !important;
+  }
+  .wmfa-overlay {
+    animation: none !important;
+  }
+}
+
+@container (min-width:240px) {
+  .wmfa-full > .wmfa-content {
+    padding: 12px !important;
+  }
+}
+
+.wmfa-frame {
+  position: absolute;
+  inset: 1px;
+  z-index: 45;
+  border: 1px solid #f4dba65c;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.wmfa-fa {
+  position: absolute;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 23px;
+  padding: 0 4px;
+  border-radius: 5px;
+  background: #d9252a;
+  color: #000000;
+  font:
+    700 10px/1 system-ui,
+    sans-serif;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+.wmfa-card:not(.wmfa-full) > .wmfa-frame,
+.wmfa-card:not(.wmfa-full) > .wmfa-fa {
+  display: none;
+}
+
+.wmfa-card.wmfa-custom-halo {
+  box-shadow:
+    0 0 14px 2px var(--wmfa-halo),
+    0 0 30px -4px var(--wmfa-halo) !important;
+}
+.wmfa-custom-halo > .wmfa-frame {
+  border-color: var(--wmfa-halo);
+}
+.wmfa-settings input[type="color"] {
+  display: block;
+  width: 100%;
+  height: 32px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+/* Keep the score row inside the card, even with a longer title. */
+.wmfa-full .wmfa-content > * {
+  flex-shrink: 0;
+}
+.wmfa-full .wmfa-content .border-t {
+  position: relative !important;
+  flex-shrink: 0 !important;
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+}
+.wmfa-full .wmfa-content h3 {
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+}
+.wmfa-full .wmfa-content > p {
+  margin-top: 0 !important;
+  margin-bottom: 6px !important;
+}
+
+/* Keep rarity and its lock visible above the full-art portrait. */
+.wmfa-full > div.absolute.top-2.left-2 {
+  z-index: 46 !important;
+}
+.wm-tools-body {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.wmfa-upload {
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid #738096;
+  border-radius: 9px;
+  background: #222b38;
+}
+.wmfa-upload input[hidden],
+.wmfa-upload img[hidden] {
+  display: none !important;
+}
+.wmfa-upload img {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  margin: 10px 0;
+  border-radius: 6px;
+  background: #131820;
+}
+.wmfa-settings .wmfa-upload button {
+  width: 100%;
+  padding: 11px;
+  margin: 6px 0;
+  font-size: 13px;
+}
+.wmfa-settings button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.wmfa-settings [data-photo-status]:empty {
+  display: none;
+}
+.wmfa-settings [data-photo-status] {
+  color: #ffe4a1;
+}
+
+/* Shared extension surfaces and controls. */
+.wmfa-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0 8px;
+}
+.wmfa-heading > span {
+  opacity: 0.6;
+  font-size: 10px;
+}
+.wmfa-settings {
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+}
+.wmfa-panel {
+  color: var(--color-foreground, #e9eaf0);
+}
+.wmfa-settings p,
+.wmfa-settings small {
+  color: inherit;
+  opacity: 0.7;
+}
+.wmfa-settings select,
+.wmfa-upload {
+  background: var(--color-surface, #191d27);
+  color: inherit;
+  border-color: var(--color-border, #ffffff26);
+}
+.wmfa-settings button {
+  background: var(--color-accent, #c9a45e);
+  color: var(--color-accent-foreground, #10151c);
+  font: 600 12px system-ui;
+}
+.wmfa-settings button.wmfa-secondary {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--color-border, #ffffff26);
+}
+.wmfa-settings .wm-feature {
+  display: flex;
+  margin: 0;
+}
+.wmfa-settings [data-action="pick-card"] {
+  width: 100%;
+  padding: 10px;
+  margin: 4px 0;
+}
+.wmfa-selected {
+  border-left: 3px solid var(--color-accent, #c9a45e);
+  padding: 8px 10px;
+  margin: 12px 0;
+  font-weight: 600;
+  background: #ffffff08;
+}
+.wmfa-settings [data-card-editor][hidden] {
+  display: none;
+}
+.wmfa-effects {
+  border-top: 1px solid var(--color-border, #ffffff26);
+  margin: 12px 0;
+}
+.wmfa-effects > summary {
+  padding: 10px 0;
+  color: inherit;
+}
+.wmfa-pickable {
+  cursor: crosshair !important;
+  outline: 2px dashed var(--color-accent, #c9a45e);
+  outline-offset: 3px;
+}
+.wmfa-pickable:hover {
+  outline-style: solid;
+  outline-width: 4px;
+}
+
+.wmfa-full > .wmfa-portrait {
+  overflow: hidden !important;
+}
+.wmfa-full .wmfa-image {
+  transform: scale(var(--wmfa-zoom, 1)) !important;
+  transform-origin: var(--wmfa-focus-x, 50%) var(--wmfa-focus, 30%) !important;
+}
+.wmfa-card.wmfa-no-halo {
+  box-shadow: none !important;
+}
+.wmfa-framing {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border, #ffffff26);
+}
+.wmfa-framing output {
+  float: right;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
