@@ -26,7 +26,7 @@
 - **Cadrage et images** : importe une image, déplace-la horizontalement ou verticalement et ajuste son zoom de 100 à 250 %.
 - **Halo et effets** : active ou désactive le halo de chaque carte, choisis sa couleur et règle les reflets, les scintillements ou l’inclinaison au survol.
 
-Les fonctions peuvent être activées ou désactivées depuis le menu **Outils Wiki** du site.
+Les fonctions peuvent être activées ou désactivées depuis le menu **WikiTools** du site.
 
 ## Installation sur Firefox
 
@@ -41,7 +41,7 @@ Il n’est pas nécessaire de décompresser le XPI ou d’activer un mode dével
 
 ## Utilisation
 
-Ouvre le menu **Outils Wiki**, affiché sur le site. Chaque catégorie possède son interrupteur : **Cadenas**, **Marché**, **Multi-étiquettes**, **Raccourcis clavier** et **Apparence des cartes**. Tes choix sont enregistrés automatiquement.
+Ouvre le menu **WikiTools**, affiché sur le site. Chaque catégorie possède son interrupteur : **Cadenas**, **Marché**, **Multi-étiquettes**, **Raccourcis clavier** et **Apparence des cartes**. Tes choix sont enregistrés automatiquement.
 
 ### Protéger des cartes avec les cadenas
 
@@ -92,7 +92,13 @@ Les cadenas sont une protection locale : ils ne verrouillent pas les cartes sur 
 
 L’extension est configurée pour rechercher ses mises à jour via les releases GitHub. Pour qu’une nouvelle version soit proposée automatiquement, sa release doit fournir le XPI signé et un fichier `updates.json` à jour. Publier uniquement des modifications du code source ne met pas à jour les extensions installées.
 
-## Code source et retours
+## Open source et contributions
+
+[![Open source — Apache 2.0](https://img.shields.io/badge/Open_source-Apache_2.0-3DA639?style=flat-square&logo=opensourceinitiative&logoColor=white)](LICENSE)
+
+**WikiTools est open source : tu peux consulter le code, le modifier et créer ta propre version.** Tu peux aussi le redistribuer dans le respect de la licence [Apache 2.0](LICENSE), notamment en conservant la licence et les mentions requises et en signalant tes modifications.
+
+Une idée de fonctionnalité, une correction ou une amélioration ? Les contributions sont les bienvenues : crée un **fork** du dépôt, apporte tes changements et propose une **pull request** pour les partager avec le projet.
 
 Le dossier [`src`](src) contient le code de l’extension. Pour l’utiliser normalement, installe le XPI signé depuis les releases.
 
