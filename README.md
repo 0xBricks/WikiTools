@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <b>Personnalise tes cartes</b> et améliore ton expérience de jeu sur WikiMasters.
+  <b>Personnalise tes cartes et améliore ton expérience de jeu sur WikiMasters.</b>
 </p>
 
 ## Fonctionnalités
