@@ -50,8 +50,7 @@ Pour retirer la protection, sélectionne les cartes verrouillées puis clique su
 
 ### Rester dans la collection après une mise en vente
 
-Active **Marché** puis mets une carte en vente normalement depuis la collection. L’extension empêche la redirection automatique vers le marché pour te laisser continuer à gérer tes cartes. Tu peux toujours ouvrir le marché volontairement avec les liens du site.
-
+Active **Marché** puis mets une carte en vente normalement depuis la collection. L’extension empêche la redirection automatique vers le marché pour te laisser continuer à gérer tes cartes.
 ### Appliquer plusieurs étiquettes
 
 Active **Multi-étiquettes**, sélectionne les cartes dans ta collection et ouvre le menu d’étiquettes du site. Coche les étiquettes souhaitées, puis clique sur le bouton d’application. L’extension les applique successivement à ta sélection : attends la fin du traitement avant de poursuivre. Si une opération échoue, un message indique combien d’étiquettes ont déjà été appliquées.
