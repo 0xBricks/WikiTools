@@ -108,3 +108,5 @@ Pour signaler un bug ou proposer une amélioration, ouvre une [issue](https://gi
 Le code est distribué sous licence **Apache 2.0**. Consulte le fichier [LICENSE](LICENSE).
 
 WikiTools est un projet communautaire non officiel, non affilié à WikiMasters.
+
+bricks <3
