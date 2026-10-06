@@ -6,10 +6,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/0xBricks/WikiTools?style=flat-square&v=2" alt="Licence">
-  <img src="https://img.shields.io/github/v/release/0xBricks/WikiTools?style=flat-square&v=2" alt="Version">
-  <img src="https://img.shields.io/github/stars/0xBricks/WikiTools?style=flat-square&v=2" alt="Stars">
-  <img src="https://img.shields.io/github/issues/0xBricks/WikiTools?style=flat-square&v=2" alt="Issues">
+  <img src="https://img.shields.io/github/license/0xBricks/WikiTools?style=flat-square&v=4" alt="Licence">
+  <img src="https://img.shields.io/github/v/release/0xBricks/WikiTools?style=flat-square&v=4" alt="Version">
+  <img src="https://img.shields.io/github/stars/0xBricks/WikiTools?style=flat-square&v=4" alt="Stars">
+  <img src="https://img.shields.io/github/issues/0xBricks/WikiTools?style=flat-square&v=4" alt="Issues">
 </p>
 
 <p align="center">
