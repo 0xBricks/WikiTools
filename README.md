@@ -109,4 +109,4 @@ Le code est distribué sous licence **Apache 2.0**. Consulte le fichier [LICENSE
 
 WikiTools est un projet communautaire non officiel, non affilié à WikiMasters.
 
-bricks <3
+<3
