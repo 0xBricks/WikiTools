@@ -23,7 +23,6 @@
 - **Multi-étiquettes** : coche plusieurs étiquettes et applique-les à une même sélection de cartes.
 - **Full Art** : personnalise les cartes de toutes les raretés, avec leur image d’origine ou une image importée. Ajuste le cadrage, le zoom, le halo et les effets visuels.
 - **Raccourcis clavier** : utilise Entrée et les flèches pendant l’ouverture des boosters.
-- **Halo et effets** : active ou désactive le halo de chaque carte, choisis sa couleur et règle les reflets, les scintillements ou l’inclinaison au survol.
 
 Les fonctions peuvent être activées ou désactivées depuis le menu **WikiTools** du site.
 
