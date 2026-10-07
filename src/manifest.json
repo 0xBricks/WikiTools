@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "WikiTools",
-  "version": "0.14.3",
+  "version": "0.14.4",
   "description": "Personnalisez vos cartes WikiMasters en Full Art et gérez votre collection avec des cadenas, des multi-étiquettes et des raccourcis clavier.",
   "browser_specific_settings": {
     "gecko": {

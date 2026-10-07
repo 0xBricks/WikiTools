@@ -13,6 +13,8 @@
     count,
     timer;
   const tracked = new Map();
+  let framingSave;
+  let saveQueue = Promise.resolve();
   const enabled = () => !globalThis.WMFeatures || WMFeatures.enabled("fullArt");
   let selectedCard = "",
     selectedLabel = "",
@@ -83,7 +85,6 @@
           .filter(
             (card) =>
               card &&
-              card.querySelector("img") &&
               [...card.querySelectorAll("div.absolute.top-2.left-2")].some(
                 (r) => rarities.has(r.textContent.trim()),
               ),
@@ -95,6 +96,14 @@
     normalize(card.querySelector("h3")?.textContent ?? "");
   const appearance = (key) =>
     Object.hasOwn(settings.cards, key) ? settings.cards[key] : {};
+  const customized = (key) => {
+    const value = appearance(key);
+    return (
+      value.full === true ||
+      Boolean(value.customImage) ||
+      ["focus", "focusX", "zoom"].some((name) => Number.isFinite(value[name]))
+    );
+  };
   const framing = (key) => {
     const card = appearance(key);
     return {
@@ -105,8 +114,26 @@
   };
   function updateCard(key, patch) {
     settings.cards[key] = { ...appearance(key), ...patch };
-    save();
-    scan();
+    if (
+      Object.keys(patch).every((name) =>
+        ["focus", "focusX", "zoom"].includes(name),
+      )
+    ) {
+      // Preview immediately without rewriting the image in storage on every tick.
+      for (const card of candidatesOnPage())
+        if (cardKey(card) === key) decorate(card);
+      for (const [name, value] of Object.entries(framing(key))) {
+        const input = panel?.querySelector(`[name="${name}"]`);
+        if (input) input.value = String(value);
+        const output = panel?.querySelector(`[data-value="${name}"]`);
+        if (output) output.textContent = `${value} %`;
+      }
+      clearTimeout(framingSave);
+      framingSave = setTimeout(() => void save(), 250);
+    } else {
+      void save();
+      scan();
+    }
   }
   function colorHex(rgb) {
     return (
@@ -274,11 +301,14 @@
     card.removeEventListener("pointermove", state.move);
     card.removeEventListener("pointerleave", state.leave);
     state.image.removeEventListener("load", state.imageLoad);
+    state.nativeImage?.removeEventListener("load", state.nativeLoad);
+    state.image.remove();
+    state.portrait.classList.remove("wmfa-has-image");
     state.overlay.remove();
     state.badge.remove();
     state.frame.remove();
     state.resize?.disconnect();
-    if (state.image && state.originalSrc) state.image.src = state.originalSrc;
+    if (state.createdPortrait) state.portrait.remove();
     for (const [el, cls] of state.classes) el.classList.remove(cls);
     card.removeAttribute("data-wmfa-effect");
     for (const prop of [
@@ -302,22 +332,56 @@
   }
   function decorate(card) {
     let state = tracked.get(card);
+    if (
+      state &&
+      (!card.contains(state.portrait) ||
+        !state.portrait.contains(state.image) ||
+        state.nativeImage !==
+          state.portrait.querySelector("img:not(.wmfa-image)"))
+    ) {
+      restore(card);
+      state = null;
+    }
     if (!state) {
       const heading = card.querySelector("h3");
       const content = heading?.parentElement;
-      const portrait = [...card.children].find(
-        (e) => e.tagName === "DIV" && e.querySelector("img"),
+      let portrait = [...card.children].find(
+        (e) => e !== content && e.tagName === "DIV" && e.querySelector("img"),
       );
-      if (!heading || !content || !portrait || content.parentElement !== card)
-        return;
-      const image = portrait.querySelector("img");
+      if (!heading || !content || content.parentElement !== card) return;
+      // Prefer the placeholder just before the text, not a decorative backdrop.
+      portrait ||= [...card.children]
+        .reverse()
+        .find(
+          (el) =>
+            el !== content &&
+            el.tagName === "DIV" &&
+            !el.matches(".absolute.top-2.left-2") &&
+            !el.className.includes("wmfa-") &&
+            el.compareDocumentPosition(content) &
+              Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+      const createdPortrait = !portrait;
+      if (!portrait) {
+        portrait = document.createElement("div");
+        portrait.className = "wmfa-empty-portrait";
+        card.insertBefore(portrait, content);
+      }
+      const nativeImage = portrait.querySelector("img");
+      // Keep React's image and responsive sources untouched; render our own layer.
+      const image = document.createElement("img");
+      image.className = "wmfa-image";
+      image.alt = nativeImage?.alt || heading.textContent.trim();
+      image.draggable = false;
+      portrait.append(image);
       const autoHalo = automaticHalo(card);
       const classes = [
         [card, "wmfa-card"],
         [portrait, "wmfa-portrait"],
-        [image, "wmfa-image"],
         [content, "wmfa-content"],
       ];
+      if (getComputedStyle(portrait).position === "static")
+        classes.push([portrait, "wmfa-positioned"]);
       for (const [el, cls] of classes) el.classList.add(cls);
       const overlay = document.createElement("div");
       overlay.className = "wmfa-overlay";
@@ -343,9 +407,13 @@
       placeBadge();
       const resize =
         typeof ResizeObserver === "function"
-          ? new ResizeObserver(placeBadge)
+          ? new ResizeObserver(() => {
+              placeBadge();
+              layoutImage(card);
+            })
           : null;
       resize?.observe(card);
+      resize?.observe(portrait);
       const leave = () => {
         card.style.setProperty("--wmfa-x", "50%");
         card.style.setProperty("--wmfa-y", "30%");
@@ -372,10 +440,13 @@
         move,
         leave,
         image,
+        nativeImage,
+        portrait,
+        createdPortrait,
         autoHalo,
-        originalSrc: image.src,
       };
       state.imageLoad = () => {
+        layoutImage(card);
         state.autoHalo = imageHalo(image) || autoHalo;
         const custom = appearance(cardKey(card));
         card.style.setProperty(
@@ -384,12 +455,14 @@
         );
       };
       image.addEventListener("load", state.imageLoad);
-      state.imageLoad();
+      state.nativeLoad = () => decorate(card);
+      nativeImage?.addEventListener("load", state.nativeLoad);
       tracked.set(card, state);
     }
-    card.classList.add("wmfa-full");
-    card.classList.toggle("wmfa-tilt", settings.tilt);
-    card.dataset.wmfaEffect = settings.effect;
+    const custom = appearance(cardKey(card));
+    card.classList.toggle("wmfa-full", custom.full === true);
+    card.classList.toggle("wmfa-tilt", custom.full === true && settings.tilt);
+    card.dataset.wmfaEffect = custom.full === true ? settings.effect : "native";
     card.style.setProperty(
       "--wmfa-intensity",
       String(settings.intensity / 100),
@@ -398,15 +471,47 @@
     card.style.setProperty("--wmfa-focus", `${crop.focus}%`);
     card.style.setProperty("--wmfa-focus-x", `${crop.focusX}%`);
     card.style.setProperty("--wmfa-zoom", String(crop.zoom / 100));
-    const custom = appearance(cardKey(card));
-    card.classList.toggle("wmfa-custom-halo", custom.haloEnabled !== false);
-    card.classList.toggle("wmfa-no-halo", custom.haloEnabled === false);
+    card.classList.toggle(
+      "wmfa-custom-halo",
+      custom.full === true && custom.haloEnabled !== false,
+    );
+    card.classList.toggle(
+      "wmfa-no-halo",
+      custom.full === true && custom.haloEnabled === false,
+    );
     card.style.setProperty("--wmfa-halo", custom.haloColor || state.autoHalo);
-    const wanted = custom.customImage || state.originalSrc;
-    if (state.image.src !== wanted) {
+    const wanted =
+      custom.customImage ||
+      state.nativeImage?.currentSrc ||
+      state.nativeImage?.src;
+    state.portrait.classList.toggle("wmfa-has-image", Boolean(wanted));
+    if (wanted && state.image.getAttribute("src") !== wanted) {
       state.image.src = wanted;
       if (state.image.complete) state.imageLoad();
     }
+    if (!wanted) state.image.removeAttribute("src");
+    layoutImage(card);
+  }
+  function layoutImage(card) {
+    const state = tracked.get(card);
+    if (!state) return;
+    const { image, portrait } = state;
+    const width = portrait.clientWidth,
+      height = portrait.clientHeight;
+    if (!image.naturalWidth || !image.naturalHeight || !width || !height)
+      return;
+    const crop = framing(cardKey(card));
+    const scale =
+      (Math.max(width / image.naturalWidth, height / image.naturalHeight) *
+        crop.zoom) /
+      100;
+    const renderedWidth = image.naturalWidth * scale;
+    const renderedHeight = image.naturalHeight * scale;
+    // Percentages span the entire overflow, so zoom never leaves blank edges.
+    image.style.width = `${renderedWidth}px`;
+    image.style.height = `${renderedHeight}px`;
+    image.style.left = `${((width - renderedWidth) * crop.focusX) / 100}px`;
+    image.style.top = `${((height - renderedHeight) * crop.focus) / 100}px`;
   }
   function buildControls(nodes) {
     return nodes.map((node) => {
@@ -530,7 +635,7 @@
                       "small",
                       {},
                       [
-                        "Photo d’origine ou importée · aperçu directement sur la carte en Full Art.",
+                        "Photo d’origine ou importée · aperçu immédiat, avec ou sans Full Art. Le déplacement dépend du débordement de la photo ; augmente le zoom pour la déplacer davantage.",
                       ],
                     ],
                     [
@@ -690,7 +795,7 @@
                       "small",
                       {},
                       [
-                        "8 Mo maximum · image optimisée à 1 200 px. Les animations deviennent une image fixe. Active le Full Art pour l’afficher.",
+                        "8 Mo maximum · image optimisée à 1 200 px. Les animations deviennent une image fixe. Visible avec ou sans Full Art.",
                       ],
                     ],
                     [
@@ -728,7 +833,7 @@
                   "small",
                   {},
                   [
-                    "Désactive « Full Art » pour retrouver son apparence originale. La photo importée reste sur ton appareil, elle n’est jamais envoyée. Aucun changement pour les autres joueurs.",
+                    "Désactive « Full Art » pour garder le format classique. Utilise « Retirer la photo » pour retrouver l’image d’origine. La photo importée reste sur ton appareil, elle n’est jamais envoyée. Aucun changement pour les autres joueurs.",
                   ],
                 ],
               ],
@@ -774,6 +879,9 @@
       scan();
     });
     const fileInput = panel.querySelector('input[name="photo"]');
+    panel.addEventListener("change", (event) => {
+      if (["focus", "focusX", "zoom"].includes(event.target.name)) void save();
+    });
     panel
       .querySelector('[data-action="choose-photo"]')
       .addEventListener("click", () => fileInput.click());
@@ -788,8 +896,8 @@
         const image = await WMImageTools.prepare(file);
         if (operation !== imageImport) return;
         settings.cards[key] = { ...appearance(key), customImage: image };
-        const saved = await save();
         scan();
+        const saved = await save();
         status.textContent = saved
           ? "Image enregistrée pour « " + key + " »."
           : "Image affichée mais non enregistrée. Réessaie.";
@@ -841,8 +949,14 @@
     }
   }
   async function save() {
+    clearTimeout(framingSave);
+    const snapshot = structuredClone(settings);
     try {
-      await browser.storage.local.set({ wmFullArt: settings });
+      const write = saveQueue.then(() =>
+        browser.storage.local.set({ wmFullArt: snapshot }),
+      );
+      saveQueue = write.catch(() => {}); // A failed write must not block subsequent saves.
+      await write;
       return true;
     } catch {
       const status = panel?.querySelector("[data-photo-status]");
@@ -867,13 +981,13 @@
     syncCards(candidates);
     for (const card of [...tracked.keys()])
       if (
-        appearance(cardKey(card)).full !== true ||
+        !customized(cardKey(card)) ||
         !candidates.includes(card) ||
         !card.isConnected
       )
         restore(card);
     for (const card of candidates)
-      if (appearance(cardKey(card)).full === true) decorate(card);
+      if (customized(cardKey(card))) decorate(card);
     if (count) {
       const value = `${candidates.length} carte${candidates.length > 1 ? "s" : ""}`;
       if (count.textContent !== value) count.textContent = value;

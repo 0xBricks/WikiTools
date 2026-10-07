@@ -8,13 +8,39 @@
   background: #16141a;
 }
 .wmfa-full > .wmfa-portrait {
+  position: absolute !important;
   inset: 0 !important;
   height: 100% !important;
   z-index: 20 !important;
 }
-.wmfa-full .wmfa-image {
-  object-fit: cover !important;
-  object-position: var(--wmfa-focus-x, 50%) var(--wmfa-focus, 30%) !important;
+.wmfa-portrait {
+  overflow: hidden !important;
+}
+.wmfa-positioned {
+  position: relative;
+}
+.wmfa-empty-portrait {
+  height: 65%;
+  min-height: 120px;
+}
+.wmfa-has-image > :not(.wmfa-image) {
+  visibility: hidden !important;
+}
+.wmfa-portrait > .wmfa-image {
+  position: absolute !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  object-fit: fill !important;
+  transform: none !important;
+  transition: none !important;
+  pointer-events: none;
+}
+.wmfa-portrait:not(.wmfa-has-image) > .wmfa-image {
+  display: none;
 }
 .wmfa-full > .wmfa-content {
   position: absolute !important;
@@ -385,13 +411,6 @@
   outline-width: 4px;
 }
 
-.wmfa-full > .wmfa-portrait {
-  overflow: hidden !important;
-}
-.wmfa-full .wmfa-image {
-  transform: scale(var(--wmfa-zoom, 1)) !important;
-  transform-origin: var(--wmfa-focus-x, 50%) var(--wmfa-focus, 30%) !important;
-}
 .wmfa-card.wmfa-no-halo {
   box-shadow: none !important;
 }
