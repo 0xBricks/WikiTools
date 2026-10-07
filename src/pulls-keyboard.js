@@ -97,7 +97,56 @@
     const matches = buttons.filter(predicate);
     return matches.length === 1 ? matches[0] : null;
   }
-  document.addEventListener(
+  const editableSelector =
+    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="slider"], [role="combobox"]';
+  function controls() {
+    const dialogs = [
+      ...document.querySelectorAll('[role="dialog"], dialog[open]'),
+    ].filter(visible);
+    const scope = dialogs.length
+      ? dialogs[dialogs.length - 1]
+      : (document.querySelector("main") ?? document);
+    return [...scope.querySelectorAll('button, [role="button"]')].filter(
+      available,
+    );
+  }
+  let previousNavigation = null;
+  function focusReveal() {
+    if (
+      !/^\/pulls\/?$/.test(location.pathname) ||
+      (globalThis.WMFeatures && !WMFeatures.enabled("pullsKeyboard"))
+    ) {
+      previousNavigation = null;
+      return;
+    }
+    const buttons = controls();
+    const next =
+      unique(buttons, (button) => direction(button, "right")) ||
+      unique(buttons, (button) => direction(button, "left"));
+    if (next === previousNavigation) return;
+    previousNavigation = next;
+    if (!next) return;
+    const active = document.activeElement;
+    // Transfer only a stale/opening focus when the reveal controls arrive.
+    // Never take focus away from a visible text field or extension settings.
+    if (active?.closest(".wm-toolbar")) return;
+    if (active?.closest(editableSelector) && visible(active)) return;
+    if (
+      !active ||
+      active === document.body ||
+      active === document.documentElement ||
+      !visible(active) ||
+      action(active, "open") ||
+      action(active, "continue")
+    ) {
+      next.focus({ preventScroll: true });
+    }
+  }
+  globalThis.WMPageEvents?.subscribe(focusReveal);
+  globalThis.WMFeatures?.subscribe(focusReveal);
+  focusReveal();
+  // Capture before the site's document-level focus traps and carousel handlers.
+  window.addEventListener(
     "keydown",
     (event) => {
       if (globalThis.WMFeatures && !WMFeatures.enabled("pullsKeyboard")) return;
@@ -116,9 +165,8 @@
       const target = event.target;
       if (
         target?.isContentEditable ||
-        target?.closest?.(
-          'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="slider"], [role="combobox"]',
-        )
+        target?.closest?.(editableSelector) ||
+        target?.closest?.(".wm-toolbar")
       )
         return;
       // A held key must never open a succession of packs or skip their reveal.
@@ -126,17 +174,7 @@
         event.preventDefault();
         return;
       }
-      const dialogs = [
-        ...document.querySelectorAll('[role="dialog"], dialog[open]'),
-      ].filter(visible);
-      const scope = dialogs.length
-        ? dialogs[dialogs.length - 1]
-        : event.key === "Enter"
-          ? (document.querySelector("main") ?? document)
-          : document;
-      const buttons = [
-        ...scope.querySelectorAll('button, [role="button"]'),
-      ].filter(available);
+      const buttons = controls();
       let button;
       if (event.key === "Enter") {
         const focused = target?.closest?.(

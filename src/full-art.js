@@ -21,25 +21,47 @@
     picking = false,
     imageImport = 0;
   const pickTargets = new Set();
+  const selection = new Map();
+  const hiddenLabels = new Set();
+  let multipleSelection = false;
+  function selectionChanged() {
+    selectedCard = selection.size === 1 ? selection.keys().next().value : "";
+    selectedLabel = selection.size === 1 ? selection.values().next().value : "";
+    scan();
+  }
+  function updateSelection(patch) {
+    for (const key of selection.keys())
+      settings.cards[key] = { ...appearance(key), ...patch };
+    if (selection.size) {
+      void save();
+      scan();
+    }
+  }
   function setPicking(value) {
     picking = value && enabled();
-    for (const card of pickTargets) card.classList.remove("wmfa-pickable");
+    for (const card of pickTargets)
+      card.classList.remove("wmfa-pickable", "wmfa-picked");
     pickTargets.clear();
     if (picking)
       for (const card of candidatesOnPage()) {
         card.classList.add("wmfa-pickable");
+        card.classList.toggle("wmfa-picked", selection.has(cardKey(card)));
         pickTargets.add(card);
       }
     if (panel) {
       const button = panel.querySelector('[data-action="pick-card"]');
       button.textContent = picking
-        ? "Annuler la sélection"
-        : selectedCard
-          ? "Changer de carte"
+        ? multipleSelection
+          ? "Terminer la sélection"
+          : "Annuler la sélection"
+        : selection.size
+          ? "Changer la sélection"
           : "Personnaliser une carte";
       button.setAttribute("aria-pressed", String(picking));
       panel.querySelector("[data-pick-hint]").textContent = picking
-        ? "Clique sur une carte dans la page. Échap pour annuler."
+        ? multipleSelection
+          ? "Clique sur les cartes à ajouter ou retirer, puis termine la sélection. Échap pour terminer."
+          : "Clique sur une carte dans la page. Échap pour annuler."
         : "Choisis directement une carte dans la collection ou la vitrine.";
     }
   }
@@ -54,13 +76,15 @@
     if (!card) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    selectedCard = cardKey(card);
-    selectedLabel = card.querySelector("h3").textContent.trim();
-    setPicking(false);
-    scan();
+    const key = cardKey(card);
+    if (!multipleSelection) selection.clear();
+    if (multipleSelection && selection.has(key)) selection.delete(key);
+    else selection.set(key, card.querySelector("h3").textContent.trim());
+    if (!multipleSelection) setPicking(false);
+    selectionChanged();
     const tools = panel?.closest(".wm-tools");
     if (tools) tools.open = true;
-    panel?.querySelector('[name="cardFull"]').focus();
+    if (!multipleSelection) panel?.querySelector('[name="cardFull"]').focus();
   }
   document.addEventListener("click", chooseCard, true);
   document.addEventListener(
@@ -212,9 +236,16 @@
   }
   function syncCards(candidates) {
     if (!panel) return;
+    panel.querySelector('[name="multipleSelection"]').checked =
+      multipleSelection;
     panel.querySelector("[data-selected-card]").textContent =
-      selectedLabel || "Aucune carte sélectionnée";
-    panel.querySelector("[data-card-editor]").hidden = !selectedCard;
+      selection.size > 1
+        ? `${selection.size} cartes sélectionnées : ${[...selection.values()].join(", ")}`
+        : selectedLabel || "Aucune carte sélectionnée";
+    panel.querySelector("[data-card-editor]").hidden = !selection.size;
+    panel.querySelector('[data-action="clear-selection"]').disabled =
+      !selection.size;
+    panel.querySelector("[data-group-hint]").hidden = selection.size < 2;
     setPicking(picking);
     const preview = panel.querySelector("[data-photo-preview]");
     const photo = appearance(selectedCard).customImage;
@@ -251,6 +282,38 @@
     ))
       el.disabled =
         !selectedCard || appearance(selectedCard).haloEnabled === false;
+    for (const [name, property, fallback] of [
+      ["cardFull", "full", false],
+      ["haloEnabled", "haloEnabled", true],
+      ["showBadge", "showBadge", true],
+      ["hideLabels", "hideLabels", false],
+    ]) {
+      const input = panel.querySelector(`[name="${name}"]`);
+      const values = [...selection.keys()].map(
+        (key) => appearance(key)[property] ?? fallback,
+      );
+      input.checked = values.length > 0 && values.every(Boolean);
+      input.indeterminate = values.some(Boolean) && !values.every(Boolean);
+      input.disabled = !selection.size;
+    }
+    const haloAvailable = [...selection.keys()].some(
+      (key) => appearance(key).haloEnabled !== false,
+    );
+    for (const el of panel.querySelectorAll(
+      '[name="haloColor"],[data-action="reset-halo"]',
+    ))
+      el.disabled = !selection.size || !haloAvailable;
+    for (const el of panel.querySelectorAll(
+      '[name="focus"],[name="focusX"],[name="zoom"],[data-action="reset-framing"]',
+    ))
+      el.disabled = !selectedCard;
+    panel.querySelector('[name="photo"]').disabled = !selectedCard;
+    panel.querySelector("[data-full-art-options]").hidden = ![
+      ...selection.keys(),
+    ].some((key) => appearance(key).full === true);
+    if (selection.size > 1)
+      panel.querySelector("[data-photo-caption]").textContent =
+        "Sélectionne une seule carte pour modifier sa photo et son cadrage.";
   }
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const normalize = (s) => s.normalize("NFC").trim().toLocaleLowerCase("fr");
@@ -274,6 +337,8 @@
         next.cards[key] = {
           haloEnabled: value.haloEnabled !== false,
           full: value.full === true,
+          showBadge: value.showBadge !== false,
+          hideLabels: value.hideLabels === true,
           customImage:
             typeof value.customImage === "string" &&
             value.customImage.startsWith("data:image/")
@@ -461,6 +526,7 @@
     }
     const custom = appearance(cardKey(card));
     card.classList.toggle("wmfa-full", custom.full === true);
+    state.badge.hidden = custom.showBadge === false;
     card.classList.toggle("wmfa-tilt", custom.full === true && settings.tilt);
     card.dataset.wmfaEffect = custom.full === true ? settings.effect : "native";
     card.style.setProperty(
@@ -524,6 +590,24 @@
       return element;
     });
   }
+  function syncLabels(candidates) {
+    const wanted = new Set();
+    for (const card of candidates) {
+      if (!appearance(cardKey(card)).hideLabels) continue;
+      const wrapper = card.closest("div.relative.isolate.group") || card;
+      for (const label of wrapper.querySelectorAll("span.rounded-full")) {
+        // The native rarity, lock and Full Art badge are not collection labels.
+        if (label.closest(".absolute.top-2.left-2, .wm-lock-marker, .wmfa-fa"))
+          continue;
+        wanted.add(label);
+        label.classList.add("wmfa-hidden-label");
+      }
+    }
+    for (const label of hiddenLabels)
+      if (!wanted.has(label)) label.classList.remove("wmfa-hidden-label");
+    hiddenLabels.clear();
+    for (const label of wanted) hiddenLabels.add(label);
+  }
   function controls() {
     if (panel?.isConnected) return;
     const host = document.querySelector(".wm-tools-body");
@@ -543,6 +627,14 @@
           { class: "wmfa-settings" },
           [
             [
+              "label",
+              {},
+              [
+                ["input", { type: "checkbox", name: "multipleSelection" }, []],
+                " Sélectionner plusieurs cartes",
+              ],
+            ],
+            [
               "button",
               {
                 type: "button",
@@ -550,6 +642,30 @@
                 "aria-pressed": "false",
               },
               ["Personnaliser une carte"],
+            ],
+            [
+              "div",
+              { class: "wmfa-photo-row" },
+              [
+                [
+                  "button",
+                  {
+                    type: "button",
+                    "data-action": "select-visible",
+                    class: "wmfa-secondary",
+                  },
+                  ["Toutes les cartes affichées"],
+                ],
+                [
+                  "button",
+                  {
+                    type: "button",
+                    "data-action": "clear-selection",
+                    class: "wmfa-secondary",
+                  },
+                  ["Vider la sélection"],
+                ],
+              ],
             ],
             [
               "p",
@@ -567,6 +683,51 @@
               "div",
               { "data-card-editor": "", hidden: "" },
               [
+                [
+                  "p",
+                  { "data-group-hint": "", hidden: "" },
+                  [
+                    "Ces réglages s’appliquent à toute la sélection. Une case avec un trait indique des valeurs différentes. La photo et le cadrage se règlent sur une seule carte à la fois.",
+                  ],
+                ],
+                [
+                  "label",
+                  { class: "wm-feature" },
+                  [
+                    [
+                      "span",
+                      {},
+                      [
+                        ["strong", {}, ["Afficher le badge FA"]],
+                        [
+                          "small",
+                          {},
+                          ["Visible uniquement sur les cartes en Full Art"],
+                        ],
+                      ],
+                    ],
+                    ["input", { type: "checkbox", name: "showBadge" }, []],
+                  ],
+                ],
+                [
+                  "label",
+                  { class: "wm-feature" },
+                  [
+                    [
+                      "span",
+                      {},
+                      [
+                        ["strong", {}, ["Masquer les étiquettes"]],
+                        [
+                          "small",
+                          {},
+                          ["Les étiquettes restent attribuées aux cartes"],
+                        ],
+                      ],
+                    ],
+                    ["input", { type: "checkbox", name: "hideLabels" }, []],
+                  ],
+                ],
                 [
                   "label",
                   { class: "wm-feature" },
@@ -842,20 +1003,68 @@
         ],
       ]),
     );
+    const fullLabel = panel.querySelector('[name="cardFull"]').closest("label");
+    const badgeLabel = panel
+      .querySelector('[name="showBadge"]')
+      .closest("label");
+    const fullOptions = document.createElement("div");
+    fullOptions.dataset.fullArtOptions = "";
+    fullLabel.parentElement.insertBefore(fullLabel, badgeLabel);
+    fullOptions.append(
+      badgeLabel,
+      panel.querySelector('[name="haloEnabled"]').closest("label"),
+      panel.querySelector('[name="haloColor"]').closest("label"),
+      panel.querySelector('[data-action="reset-halo"]'),
+    );
+    fullLabel.after(fullOptions);
     count = panel.querySelector("[data-count]");
     panel
       .querySelector('[data-action="pick-card"]')
       .addEventListener("click", () => setPicking(!picking));
+    panel
+      .querySelector('[data-action="select-visible"]')
+      .addEventListener("click", () => {
+        multipleSelection = true;
+        panel.querySelector('[name="multipleSelection"]').checked = true;
+        selection.clear();
+        for (const card of candidatesOnPage()) {
+          if (
+            !card.getClientRects().length ||
+            getComputedStyle(card).visibility === "hidden"
+          )
+            continue;
+          selection.set(
+            cardKey(card),
+            card.querySelector("h3").textContent.trim(),
+          );
+        }
+        selectionChanged();
+      });
+    panel
+      .querySelector('[data-action="clear-selection"]')
+      .addEventListener("click", () => {
+        selection.clear();
+        selectionChanged();
+      });
     panel.addEventListener("input", (event) => {
       const input = event.target;
       if (input.name === "photo") return;
+      if (input.name === "multipleSelection") {
+        multipleSelection = input.checked;
+        if (!multipleSelection && selection.size > 1) selection.clear();
+        selectionChanged();
+        return;
+      }
+      if (["showBadge", "hideLabels"].includes(input.name)) {
+        updateSelection({ [input.name]: input.checked });
+        return;
+      }
       if (input.name === "cardFull") {
-        if (selectedCard) updateCard(selectedCard, { full: input.checked });
+        updateSelection({ full: input.checked });
         return;
       }
       if (input.name === "haloEnabled") {
-        if (selectedCard)
-          updateCard(selectedCard, { haloEnabled: input.checked });
+        updateSelection({ haloEnabled: input.checked });
         return;
       }
       if (["focus", "focusX", "zoom"].includes(input.name)) {
@@ -864,7 +1073,7 @@
         return;
       }
       if (input.name === "haloColor") {
-        if (selectedCard) updateCard(selectedCard, { haloColor: input.value });
+        updateSelection({ haloColor: input.value });
         return;
       }
       if (!Object.hasOwn(defaults, input.name)) return;
@@ -924,7 +1133,7 @@
     panel
       .querySelector('[data-action="reset-halo"]')
       .addEventListener("click", () => {
-        if (selectedCard) updateCard(selectedCard, { haloColor: null });
+        updateSelection({ haloColor: null });
       });
     panel
       .querySelector('[data-action="reset-all"]')
@@ -979,6 +1188,7 @@
       ? candidatesOnPage().filter((c) => cardKey(c))
       : [];
     syncCards(candidates);
+    syncLabels(candidates);
     for (const card of [...tracked.keys()])
       if (
         !customized(cardKey(card)) ||

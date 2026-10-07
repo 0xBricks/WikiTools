@@ -248,6 +248,14 @@
   letter-spacing: 0.02em;
   pointer-events: none;
 }
+.wmfa-fa[hidden],
+.wmfa-hidden-label {
+  display: none !important;
+}
+.wmfa-pickable.wmfa-picked {
+  outline: 4px solid #64d8a0;
+  outline-offset: 3px;
+}
 .wmfa-card:not(.wmfa-full) > .wmfa-frame,
 .wmfa-card:not(.wmfa-full) > .wmfa-fa {
   display: none;
@@ -384,6 +392,8 @@
   margin: 4px 0;
 }
 .wmfa-selected {
+  max-height: 120px;
+  overflow-y: auto;
   border-left: 3px solid var(--color-accent, #c9a45e);
   padding: 8px 10px;
   margin: 12px 0;
@@ -392,6 +402,9 @@
 }
 .wmfa-settings [data-card-editor][hidden] {
   display: none;
+}
+.wmfa-settings [data-full-art-options][hidden] {
+  display: none !important;
 }
 .wmfa-effects {
   border-top: 1px solid var(--color-border, #ffffff26);

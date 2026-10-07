@@ -22,6 +22,7 @@
 - **Marché** : reste dans ta collection après une mise en vente, sans redirection automatique vers le marché.
 - **Multi-étiquettes** : coche plusieurs étiquettes et applique-les à une même sélection de cartes.
 - **Full Art** : personnalise les cartes de toutes les raretés, avec leur image d’origine ou une image importée. Ajuste le cadrage, le zoom, le halo et les effets visuels.
+- **Personnalisation groupée** : sélectionne plusieurs cartes pour activer ou désactiver leur Full Art, régler leurs halos, afficher ou masquer le badge FA et cacher leurs étiquettes.
 - **Raccourcis clavier** : utilise Entrée et les flèches pendant l’ouverture des boosters.
 
 Les fonctions peuvent être activées ou désactivées depuis le menu **WikiTools** du site.
@@ -59,6 +60,8 @@ Active **Multi-étiquettes**, sélectionne les cartes dans ta collection et ouvr
 Active **Apparence des cartes**, clique sur **Personnaliser une carte**, puis directement sur une carte dans la collection ou la vitrine. Les réglages de cette carte s’affichent dans le panneau, quelle que soit sa rareté.
 
 - **Full Art** : active cet interrupteur pour étendre l’image sur toute la carte.
+- **Afficher le badge FA** : décoche cette case pour cacher le badge, tout en conservant le Full Art.
+- **Masquer les étiquettes** : cache les étiquettes sur les cartes dans ton navigateur. Elles restent attribuées aux cartes ; décoche la case pour les revoir.
 - **Image** : conserve l’image d’origine ou clique sur **Choisir une image…** pour importer la tienne. L’image importée s’affiche immédiatement, avec ou sans Full Art, même si la carte n’avait pas de photo. Les fichiers sont limités à 8 Mo, optimisés à 1 200 pixels et les images animées deviennent fixes. Le bouton de retour à l’image d’origine permet de retirer l’image personnalisée.
 - **Cadrage** : ajuste les curseurs **Horizontal**, **Vertical** et **Zoom** avec un aperçu immédiat sur la carte, avec ou sans Full Art. Ces réglages fonctionnent avec l’image d’origine comme avec une image importée. Le déplacement suit la partie de la photo qui dépasse du cadre : augmente le zoom pour disposer de davantage de marge. **Réinitialiser le cadrage** restaure le cadrage par défaut.
 - **Halo** : active ou désactive la lueur de cette carte et choisis sa couleur. **Halo automatique** rétablit la couleur calculée automatiquement.
@@ -66,9 +69,19 @@ Active **Apparence des cartes**, clique sur **Personnaliser une carte**, puis di
 
 Les réglages sont enregistrés automatiquement. Désactiver **Apparence des cartes** masque les personnalisations sans les supprimer.
 
+Les réglages du badge FA et du halo apparaissent sous **Full Art** uniquement lorsqu’il est activé. Avec une sélection multiple, ils apparaissent dès qu’au moins une des cartes sélectionnées est en Full Art.
+
+### Modifier plusieurs cartes à la fois
+
+Coche **Sélectionner plusieurs cartes**, lance la sélection, puis clique sur les cartes à ajouter. Un second clic retire une carte de la sélection. Clique sur **Terminer la sélection** lorsque tu as fini. Tu peux aussi utiliser **Toutes les cartes affichées** pour sélectionner les cartes actuellement affichées dans la page, ou **Vider la sélection** pour repartir de zéro.
+
+Les commandes **Full Art**, **Afficher le badge FA**, **Masquer les étiquettes**, **Halo**, sa couleur et **Halo automatique** s’appliquent alors à toute la sélection. Une case avec un trait indique que les cartes ont des valeurs différentes ; cliquer dessus applique le même choix à toutes. Les photos et cadrages existants sont conservés : sélectionne une seule carte pour les modifier.
+
 ### Ouvrir les boosters au clavier
 
 Active **Raccourcis clavier**, puis rends-toi sur la page d’ouverture des boosters. Les touches suivent les actions disponibles à l’écran :
+
+À l’apparition des cartes, les flèches prennent le focus pour permettre la navigation dès le premier booster, sans clic supplémentaire dans la page. Les champs de saisie et les réglages WikiTools conservent leur fonctionnement normal.
 
 | Touche | Action |
 |---|---|
