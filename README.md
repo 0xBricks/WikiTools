@@ -30,7 +30,7 @@ Les fonctions peuvent être activées ou désactivées depuis le menu **WikiTool
 ## Installation sur Firefox
 
 1. Ouvre la page des [releases](https://github.com/0xBricks/WikiTools/releases).
-2. Dans la section **Assets** de la release, télécharge le fichier **`.xpi` signé**.
+2. Dans la section **Assets** de la release, télécharge le fichier **`.xpi`**.
 3. Dans Firefox, ouvre `about:addons`.
 4. Clique sur la roue dentée, puis sur **Installer un module depuis un fichier…**.
 5. Sélectionne le fichier `.xpi` et confirme l’installation.
