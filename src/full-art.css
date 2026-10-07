@@ -406,6 +406,69 @@
 .wmfa-settings [data-full-art-options][hidden] {
   display: none !important;
 }
+.wmfa-settings [data-halo-options][hidden],
+.wmfa-settings [data-image-section][hidden] {
+  display: none !important;
+}
+.wmfa-section {
+  margin: 14px 0;
+  padding: 12px;
+  border: 1px solid var(--color-border, #ffffff26);
+  border-radius: 8px;
+}
+.wmfa-section h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+.wmfa-section > summary,
+.wmfa-submenu > summary {
+  padding: 4px 0;
+  color: inherit;
+}
+.wmfa-submenu {
+  margin: 4px 0 12px 12px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--color-border, #ffffff26);
+}
+.wmfa-submenu > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 8px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--color-border, #ffffff26);
+  border-radius: 6px;
+  background: #ffffff08;
+  cursor: pointer;
+}
+.wmfa-submenu > summary:hover {
+  background: #ffffff12;
+  border-color: var(--color-accent, #c9a45e);
+}
+.wmfa-submenu > summary::after {
+  content: "";
+  grid-column: 2;
+  grid-row: 1;
+  width: 7px;
+  height: 7px;
+  margin: -4px 0 0;
+  border: 0;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  border-radius: 0;
+  color: var(--color-accent, #c9a45e);
+  transform: rotate(45deg);
+}
+.wmfa-submenu[open] > summary::after {
+  margin-top: 4px;
+  transform: rotate(225deg);
+}
+.wmfa-image-section .wmfa-upload {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
 .wmfa-effects {
   border-top: 1px solid var(--color-border, #ffffff26);
   margin: 12px 0;

@@ -297,8 +297,12 @@
       input.disabled = !selection.size;
     }
     const haloAvailable = [...selection.keys()].some(
-      (key) => appearance(key).haloEnabled !== false,
+      (key) =>
+        appearance(key).full === true && appearance(key).haloEnabled !== false,
     );
+    panel.querySelector("[data-halo-options]").hidden = !haloAvailable;
+    if (!haloAvailable) panel.querySelector("[data-halo-options]").open = false;
+    panel.querySelector("[data-image-section]").hidden = selection.size !== 1;
     for (const el of panel.querySelectorAll(
       '[name="haloColor"],[data-action="reset-halo"]',
     ))
@@ -1013,10 +1017,56 @@
     fullOptions.append(
       badgeLabel,
       panel.querySelector('[name="haloEnabled"]').closest("label"),
+    );
+    const haloOptions = document.createElement("details");
+    haloOptions.dataset.haloOptions = "";
+    haloOptions.className = "wmfa-submenu";
+    const haloSummary = document.createElement("summary");
+    haloSummary.textContent = "Réglages du halo";
+    haloOptions.append(
+      haloSummary,
       panel.querySelector('[name="haloColor"]').closest("label"),
       panel.querySelector('[data-action="reset-halo"]'),
     );
+    fullOptions.append(haloOptions);
     fullLabel.after(fullOptions);
+    const editor = panel.querySelector("[data-card-editor]");
+    const appearanceSection = document.createElement("section");
+    appearanceSection.className = "wmfa-section";
+    const appearanceTitle = document.createElement("h4");
+    appearanceTitle.textContent = "Style des cartes";
+    appearanceSection.append(
+      appearanceTitle,
+      fullLabel,
+      fullOptions,
+      panel.querySelector('[name="hideLabels"]').closest("label"),
+    );
+    const imageSection = document.createElement("details");
+    imageSection.dataset.imageSection = "";
+    imageSection.className = "wmfa-section wmfa-image-section";
+    imageSection.open = true;
+    const imageSummary = document.createElement("summary");
+    imageSummary.textContent = "Image et cadrage";
+    const upload = panel.querySelector(".wmfa-upload");
+    upload.append(panel.querySelector('[data-action="reset-photo"]'));
+    imageSection.append(
+      imageSummary,
+      upload,
+      panel.querySelector(".wmfa-framing"),
+    );
+    const effects = panel.querySelector(".wmfa-effects");
+    const resetRow = panel.querySelector(".wmfa-photo-row:last-of-type");
+    const resetButton = panel.querySelector('[data-action="reset-all"]');
+    resetButton.textContent = "Réinitialiser toutes les apparences";
+    resetButton.classList.add("wmfa-secondary");
+    editor.insertBefore(
+      appearanceSection,
+      editor.querySelector("[data-group-hint]").nextSibling,
+    );
+    appearanceSection.after(imageSection);
+    imageSection.after(effects);
+    // Keep the global reset separate from the selected card's photo controls.
+    if (resetRow?.contains(resetButton)) effects.after(resetRow);
     count = panel.querySelector("[data-count]");
     panel
       .querySelector('[data-action="pick-card"]')
